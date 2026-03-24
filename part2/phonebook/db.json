@@ -1,14 +1,14 @@
 {
   "persons": [
     {
-      "id": "a6c5",
-      "name": "clemente",
-      "number": "4"
+      "id": "63db",
+      "name": "juanita",
+      "number": "134"
     },
     {
-      "id": "f9eb",
-      "name": "juanita ",
-      "number": "5"
+      "id": "af54",
+      "name": "clemente3",
+      "number": "12"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
