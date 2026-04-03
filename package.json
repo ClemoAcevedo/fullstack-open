@@ -1,0 +1,9 @@
+{
+    "name": "fullstack-open-root",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "build:ui": "cd part2/testing && npm run build && rm -rf ../../part3/testing/dist && cp -r dist ../../part3/testing",
+        "deploy:full": "npm run build:ui && git add . && git commit -m \"uibuild\" || echo \"No changes to commit\" && git push"
+    }
+}
