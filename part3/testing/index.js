@@ -2,9 +2,8 @@ const express = require('express')
 const cors = require('cors')
 
 const app = express()
+
 app.use(cors())
-
-
 app.use(express.json())
 
 const requestLogger = (request, response, next) => {
@@ -14,6 +13,8 @@ const requestLogger = (request, response, next) => {
     console.log('---')
     next()
 }
+
+app.use(requestLogger)
 
 let notes = [
     {
@@ -30,7 +31,8 @@ let notes = [
         id: "3",
         content: "GET and POST are the most important methods of HTTP protocol",
         important: true
-    }]
+    }
+]
 
 app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>')
@@ -46,8 +48,7 @@ app.get('/api/notes/:id', (request, response) => {
 
     if (note) {
         response.json(note)
-    }
-    else {
+    } else {
         response.status(404).end()
     }
 })
@@ -60,7 +61,10 @@ app.delete('/api/notes/:id', (request, response) => {
 })
 
 const generateId = () => {
-    const maxId = notes.length > 0 ? Math.max(...notes.map(n => Number(n.id))) : 0
+    const maxId = notes.length > 0
+        ? Math.max(...notes.map(n => Number(n.id)))
+        : 0
+
     return String(maxId + 1)
 }
 
@@ -74,14 +78,14 @@ app.post('/api/notes', (request, response) => {
     }
 
     const note = {
-        content: body.content,
-        important: body.important || false,
         id: generateId(),
+        content: body.content,
+        important: body.important ?? false
     }
 
     notes = notes.concat(note)
 
-    response.json(note)
+    response.status(201).json(note)
 })
 
 const unknownEndpoint = (request, response) => {
