@@ -4,6 +4,8 @@
     "private": true,
     "scripts": {
         "build:ui": "cd part2/testing && npm run build && rm -rf ../../part3/testing/dist && cp -r dist ../../part3/testing",
-        "deploy:full": "npm run build:ui && git add . && git commit -m \"uibuild\" || echo \"No changes to commit\" && git push"
+        "deploy:full": "npm run build:ui && git add . && git commit -m \"uibuild\" || echo \"No changes to commit\" && git push",
+        "build:phonebook": "cd part2/phonebook && npm run build && rm -rf ../../part3/phonebook/dist && cp -r dist ../../part3/phonebook",
+        "deploy:phonebook": "npm run build:phonebook && git add . && git commit -m \"phonebook build\" || echo \"No changes to commit\" && git push"
     }
 }
