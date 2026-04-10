@@ -108,15 +108,18 @@ const App = () => {
             setSuccessMessage(null)
           }, 5000)
         })
-        .catch(() => {
-          setErrorMessage(`Information of ${person.name} has already been removed from server`)
+        .catch(error => {
+          if (error.response && error.response.data && error.response.data.error) {
+            setErrorMessage(error.response.data.error)
+          } else {
+            setErrorMessage(`Information of ${person.name} has already been removed from server`)
+            setPersons(prevPersons =>
+              prevPersons.filter(p => p.id !== id)
+            )
+          }
           setTimeout(() => {
             setErrorMessage(null)
           }, 5000)
-
-          setPersons(prevPersons =>
-            prevPersons.filter(p => p.id !== id)
-          )
         })
 
       return
@@ -137,8 +140,8 @@ const App = () => {
           setSuccessMessage(null)
         }, 5000)
       })
-      .catch(() => {
-        setErrorMessage(`Failed to add ${personObject.name}`)
+      .catch(error => {
+        setErrorMessage(error.response.data.error)
         setTimeout(() => {
           setErrorMessage(null)
         }, 5000)
