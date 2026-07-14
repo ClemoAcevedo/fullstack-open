@@ -5,6 +5,7 @@ const Blog = ({ blog, user, handleLike, handleRemove }) => {
 
   return (
     <div
+      className="blog"
       style={{
         border: '1px solid black',
         padding: '8px',
@@ -12,15 +13,16 @@ const Blog = ({ blog, user, handleLike, handleRemove }) => {
         borderRadius: '4px'
       }}
     >
-      <span>{blog.title}</span>
+      <div className="blog-summary">
+        <span>{blog.title}</span> <span>{blog.author}</span>
 
-      <button onClick={() => setShowDetails(prev => !prev)}>
-        {showDetails ? 'hide' : 'view'}
-      </button>
+        <button onClick={() => setShowDetails(prev => !prev)}>
+          {showDetails ? 'hide' : 'view'}
+        </button>
+      </div>
 
       {showDetails && (
-        <div>
-          <p>Author: {blog.author}</p>
+        <div className="blog-details">
           <p>URL: {blog.url}</p>
 
           <p>
