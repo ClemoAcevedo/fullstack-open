@@ -78,10 +78,15 @@ const App = () => {
 
   const handleCreation = async (blogObject) => {
     try {
-      const blog = await blogService.create(blogObject)
+      const returnedBlog = await blogService.create(blogObject)
+
+      const blogWithUser = {
+        ...returnedBlog,
+        user
+      }
 
       setNotificationMessage(
-        `a new blog ${blog.title} by ${blog.author}`
+        `a new blog ${returnedBlog.title} by ${returnedBlog.author}`
       )
       setNotificationType('success')
 
@@ -90,7 +95,7 @@ const App = () => {
         setNotificationType(null)
       }, 5000)
 
-      setBlogs(prevBlogs => prevBlogs.concat(blog))
+      setBlogs(prevBlogs => prevBlogs.concat(blogWithUser))
     } catch {
       setNotificationMessage('error in the creation of the blog')
       setNotificationType('error')
@@ -106,10 +111,6 @@ const App = () => {
     <div>
       <h2>blogs</h2>
 
-      <button onClick={sortBlogsByLikes}>
-        sort by likes
-      </button>
-
       <Togglable buttonLabel="new blog">
         <BlogForm createBlog={handleCreation} />
       </Togglable>
@@ -117,15 +118,17 @@ const App = () => {
       <p>{user.name} logged in</p>
       <button onClick={handleLogout}>logout</button>
 
-      {blogs.map(blog => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          user={user}
-          handleLike={handleLike}
-          handleRemove={handleRemove}
-        />
-      ))}
+      {[...blogs]
+        .sort((a, b) => b.likes - a.likes)
+        .map(blog => (
+          <Blog
+            key={blog.id}
+            blog={blog}
+            user={user}
+            handleLike={handleLike}
+            handleRemove={handleRemove}
+          />
+        ))}
     </div>
   )
 
@@ -144,11 +147,6 @@ const App = () => {
     } catch (error) {
       console.log(error)
     }
-  }
-
-  const sortBlogsByLikes = () => {
-    const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
-    setBlogs(sortedBlogs)
   }
 
   const handleRemove = async (blog) => {
