@@ -1,9 +1,16 @@
 import { useEffect, useState } from 'react'
+import {
+  Link,
+  Route,
+  Routes,
+  useMatch,
+  useNavigate
+} from 'react-router-dom'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
+import BlogList from './components/BlogList'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
-import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -15,6 +22,7 @@ const App = () => {
   const [notificationMessage, setNotificationMessage] = useState(null)
   const [notificationType, setNotificationType] = useState(null)
 
+  const navigate = useNavigate()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -24,6 +32,7 @@ const App = () => {
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
+
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
@@ -31,6 +40,11 @@ const App = () => {
     }
   }, [])
 
+  const match = useMatch('/blogs/:id')
+
+  const blog = match
+    ? blogs.find(blog => blog.id === match.params.id)
+    : null
 
   const handleLogin = async ({ username, password }) => {
     try {
@@ -51,6 +65,8 @@ const App = () => {
         setNotificationMessage(null)
         setNotificationType(null)
       }, 5000)
+
+      navigate('/')
     } catch {
       setNotificationMessage('wrong username or password')
       setNotificationType('error')
@@ -74,6 +90,8 @@ const App = () => {
       setNotificationMessage(null)
       setNotificationType(null)
     }, 5000)
+
+    navigate('/')
   }
 
   const handleCreation = async (blogObject) => {
@@ -85,6 +103,10 @@ const App = () => {
         user
       }
 
+      setBlogs(prevBlogs =>
+        prevBlogs.concat(blogWithUser)
+      )
+
       setNotificationMessage(
         `a new blog ${returnedBlog.title} by ${returnedBlog.author}`
       )
@@ -95,7 +117,7 @@ const App = () => {
         setNotificationType(null)
       }, 5000)
 
-      setBlogs(prevBlogs => prevBlogs.concat(blogWithUser))
+      navigate('/')
     } catch {
       setNotificationMessage('error in the creation of the blog')
       setNotificationType('error')
@@ -107,31 +129,6 @@ const App = () => {
     }
   }
 
-  const showBlogs = () => (
-    <div>
-      <h2>blogs</h2>
-
-      <Togglable buttonLabel="new blog">
-        <BlogForm createBlog={handleCreation} />
-      </Togglable>
-
-      <p>{user.name} logged in</p>
-      <button onClick={handleLogout}>logout</button>
-
-      {[...blogs]
-        .sort((a, b) => b.likes - a.likes)
-        .map(blog => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            user={user}
-            handleLike={handleLike}
-            handleRemove={handleRemove}
-          />
-        ))}
-    </div>
-  )
-
   const handleLike = async (blogObject) => {
     const updatedBlog = {
       ...blogObject,
@@ -139,10 +136,18 @@ const App = () => {
     }
 
     try {
-      const returnedBlog = await blogService.update(blogObject.id, updatedBlog)
+      const returnedBlog = await blogService.update(
+        blogObject.id,
+        updatedBlog
+      )
+
+      const blogWithUser = {
+        ...returnedBlog,
+        user: blogObject.user
+      }
 
       setBlogs(blogs.map(blog =>
-        blog.id === returnedBlog.id ? returnedBlog : blog
+        blog.id === blogWithUser.id ? blogWithUser : blog
       ))
     } catch (error) {
       console.log(error)
@@ -162,6 +167,8 @@ const App = () => {
       setBlogs(prevBlogs =>
         prevBlogs.filter(b => b.id !== blog.id)
       )
+
+      navigate('/')
     } catch (error) {
       console.log(error)
     }
@@ -169,16 +176,65 @@ const App = () => {
 
   return (
     <div>
+      <div>
+        <Link to="/">blogs</Link>{' '}
+
+        {!user && (
+          <Link to="/login">login</Link>
+        )}
+
+        {user && (
+          <>
+            <Link to="/create">create</Link>{' '}
+            {user.name} logged in{' '}
+            <button onClick={handleLogout}>
+              logout
+            </button>
+          </>
+        )}
+      </div>
+
       <Notification
         message={notificationMessage}
         type={notificationType}
       />
 
-      {!user ? (
-        <LoginForm handleLogin={handleLogin} />
-      ) : (
-        showBlogs()
-      )}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <BlogList blogs={blogs} />
+          }
+        />
+
+        <Route
+          path="/blogs/:id"
+          element={
+            <Blog
+              blog={blog}
+              user={user}
+              handleLike={handleLike}
+              handleRemove={handleRemove}
+            />
+          }
+        />
+
+        <Route
+          path="/login"
+          element={
+            <LoginForm handleLogin={handleLogin} />
+          }
+        />
+
+        <Route
+          path="/create"
+          element={
+            user
+              ? <BlogForm createBlog={handleCreation} />
+              : <LoginForm handleLogin={handleLogin} />
+          }
+        />
+      </Routes>
     </div>
   )
 }

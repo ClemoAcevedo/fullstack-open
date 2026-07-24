@@ -6,7 +6,9 @@ test('calls the event handler with the right details when a new blog is created'
   const user = userEvent.setup()
   const createBlog = vi.fn()
 
-  render(<BlogForm createBlog={createBlog} />)
+  render(
+    <BlogForm createBlog={createBlog} />
+  )
 
   const inputs = screen.getAllByRole('textbox')
 
@@ -14,9 +16,12 @@ test('calls the event handler with the right details when a new blog is created'
   await user.type(inputs[1], 'Kent C. Dodds')
   await user.type(inputs[2], 'https://testing-library.com')
 
-  await user.click(screen.getByRole('button', { name: /create/i }))
+  await user.click(
+    screen.getByRole('button', { name: /create/i })
+  )
 
   expect(createBlog).toHaveBeenCalledTimes(1)
+
   expect(createBlog).toHaveBeenCalledWith({
     title: 'Testing React',
     author: 'Kent C. Dodds',

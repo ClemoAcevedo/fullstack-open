@@ -1,20 +1,20 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
+import {
+  Link,
+  Route,
+  Routes,
+  useMatch
+} from 'react-router-dom'
+
 import Footer from './components/Footer'
-import LoginForm from './components/LoginForm'
+import Home from './components/Home'
 import Note from './components/Note'
 import NoteForm from './components/NoteForm'
-import Notification from './components/Notification'
-import Togglable from './components/Togglable'
-import loginService from './services/login'
+import NoteList from './components/NoteList'
 import noteService from './services/notes'
 
 const App = () => {
   const [notes, setNotes] = useState([])
-  const [showAll, setShowAll] = useState(true)
-  const [errorMessage, setErrorMessage] = useState(null)
-  const [user, setUser] = useState(null)
-
-  const noteFormRef = useRef()
 
   useEffect(() => {
     noteService.getAll().then(initialNotes => {
@@ -22,26 +22,10 @@ const App = () => {
     })
   }, [])
 
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem(
-      'loggedNoteappUser'
-    )
-
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
-      noteService.setToken(user.token)
-    }
-  }, [])
-
   const addNote = noteObject => {
-    noteFormRef.current.toggleVisibility()
-
-    noteService
-      .create(noteObject)
-      .then(returnedNote => {
-        setNotes(notes.concat(returnedNote))
-      })
+    noteService.create(noteObject).then(returnedNote => {
+      setNotes(notes.concat(returnedNote))
+    })
   }
 
   const toggleImportanceOf = id => {
@@ -56,108 +40,74 @@ const App = () => {
       .then(returnedNote => {
         setNotes(
           notes.map(note =>
-            note.id !== id
-              ? note
-              : returnedNote
+            note.id !== id ? note : returnedNote
           )
         )
       })
       .catch(() => {
-        setErrorMessage(
-          `Note '${note.content}' was already removed from server`
-        )
-
-        setTimeout(() => {
-          setErrorMessage(null)
-        }, 5000)
-
         setNotes(notes.filter(n => n.id !== id))
       })
   }
 
-  const handleLogin = async credentials => {
-    try {
-      const user = await loginService.login(credentials)
-
-      window.localStorage.setItem(
-        'loggedNoteappUser',
-        JSON.stringify(user)
-      )
-
-      noteService.setToken(user.token)
-      setUser(user)
-    } catch {
-      setErrorMessage('wrong credentials')
-
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
-    }
+  const deleteNote = id => {
+    noteService.remove(id).then(() => {
+      setNotes(notes.filter(n => n.id !== id))
+    })
   }
 
-  const handleLogout = () => {
-    window.localStorage.removeItem('loggedNoteappUser')
-    noteService.setToken(null)
-    setUser(null)
+  const match = useMatch('/notes/:id')
+
+  const note = match
+    ? notes.find(note => note.id === match.params.id)
+    : null
+
+  const padding = {
+    padding: 5
   }
-
-  const notesToShow = showAll
-    ? notes
-    : notes.filter(note => note.important)
-
-  const loginForm = () => (
-    <Togglable buttonLabel="login">
-      <LoginForm login={handleLogin} />
-    </Togglable>
-  )
-
-  const noteForm = () => (
-    <Togglable
-      buttonLabel="new note"
-      ref={noteFormRef}
-    >
-      <NoteForm createNote={addNote} />
-    </Togglable>
-  )
 
   return (
     <div>
-      <h1>Notes</h1>
-
-      <Notification message={errorMessage} />
-
-      {!user && loginForm()}
-
-      {user && (
-        <div>
-          <p>
-            {user.name} logged in{' '}
-            <button onClick={handleLogout}>
-              logout
-            </button>
-          </p>
-
-          {noteForm()}
-        </div>
-      )}
-
       <div>
-        <button onClick={() => setShowAll(!showAll)}>
-          show {showAll ? 'important' : 'all'}
-        </button>
+        <Link style={padding} to="/">
+          home
+        </Link>
+
+        <Link style={padding} to="/notes">
+          notes
+        </Link>
+
+        <Link style={padding} to="/create">
+          new note
+        </Link>
       </div>
 
-      <ul>
-        {notesToShow.map(note => (
-          <Note
-            key={note.id}
-            note={note}
-            toggleImportance={() =>
-              toggleImportanceOf(note.id)
-            }
-          />
-        ))}
-      </ul>
+      <Routes>
+        <Route
+          path="/notes/:id"
+          element={
+            <Note
+              note={note}
+              toggleImportanceOf={toggleImportanceOf}
+              deleteNote={deleteNote}
+            />
+          }
+        />
+
+        <Route
+          path="/notes"
+          element={<NoteList notes={notes} />}
+        />
+
+        <Route
+          path="/create"
+          element={<NoteForm createNote={addNote} />}
+        />
+
+        <Route
+          path="/"
+          element={<Home />}
+        />
+      </Routes>
 
       <Footer />
     </div>

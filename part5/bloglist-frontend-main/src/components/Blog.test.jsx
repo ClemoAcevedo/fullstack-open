@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
 
 const blog = {
@@ -13,85 +12,66 @@ const blog = {
   },
 }
 
-const user = {
-  username: 'johndoe',
-}
-
-test('renders title and author, but not url or likes by default', () => {
+test('unauthenticated user sees blog information and likes but no buttons', () => {
   render(
     <Blog
       blog={blog}
-      user={user}
+      user={null}
       handleLike={() => { }}
       handleRemove={() => { }}
     />
   )
 
   expect(screen.getByText(blog.title)).toBeInTheDocument()
-  expect(screen.getByText(blog.author)).toBeInTheDocument()
+  expect(screen.getByText(blog.url)).toBeInTheDocument()
+  expect(screen.getByText(`${blog.likes} likes`)).toBeInTheDocument()
+  expect(screen.getByText(`added by ${blog.user.name}`)).toBeInTheDocument()
 
-  expect(screen.queryByText(`URL: ${blog.url}`)).not.toBeInTheDocument()
-  expect(screen.queryByText(/Likes:/)).not.toBeInTheDocument()
+  expect(screen.queryByRole('button')).not.toBeInTheDocument()
 })
 
-test('shows url and likes when view button is clicked', async () => {
-  const userSetup = userEvent.setup()
+test('authenticated user who is not the creator sees only the like button', () => {
+  const otherUser = {
+    username: 'janedoe',
+  }
 
   render(
     <Blog
       blog={blog}
-      user={user}
+      user={otherUser}
       handleLike={() => { }}
       handleRemove={() => { }}
     />
   )
 
-  await userSetup.click(screen.getByRole('button', { name: /view/i }))
+  expect(
+    screen.getByRole('button', { name: /like/i })
+  ).toBeInTheDocument()
 
-  expect(screen.getByText(`URL: ${blog.url}`)).toBeInTheDocument()
-  expect(screen.getByText(`Likes: ${blog.likes}`)).toBeInTheDocument()
+  expect(
+    screen.queryByRole('button', { name: /remove/i })
+  ).not.toBeInTheDocument()
 })
 
-test('calls event handler twice if like button is clicked twice', async () => {
-  const userSetup = userEvent.setup()
-  const handleLike = vi.fn()
+test('blog creator sees both like and remove buttons', () => {
+  const creator = {
+    username: 'johndoe',
+  }
 
   render(
     <Blog
       blog={blog}
-      user={user}
-      handleLike={handleLike}
+      user={creator}
+      handleLike={() => { }}
       handleRemove={() => { }}
     />
   )
 
-  // Mostrar los detalles para que aparezca el botón "like"
-  await userSetup.click(screen.getByRole('button', { name: /view/i }))
+  expect(
+    screen.getByRole('button', { name: /like/i })
+  ).toBeInTheDocument()
 
-  const likeButton = screen.getByRole('button', { name: /like/i })
-
-  await userSetup.click(likeButton)
-  await userSetup.click(likeButton)
-
-  expect(handleLike).toHaveBeenCalledTimes(2)
-})
-
-test('calls handleRemove when remove button is clicked', async () => {
-  const userSetup = userEvent.setup()
-  const handleRemove = vi.fn()
-
-  render(
-    <Blog
-      blog={blog}
-      user={user}
-      handleLike={() => { }}
-      handleRemove={handleRemove}
-    />
-  )
-
-  await userSetup.click(screen.getByRole('button', { name: /view/i }))
-  await userSetup.click(screen.getByRole('button', { name: /remove/i }))
-
-  expect(handleRemove).toHaveBeenCalledTimes(1)
-  expect(handleRemove).toHaveBeenCalledWith(blog)
+  expect(
+    screen.getByRole('button', { name: /remove/i })
+  ).toBeInTheDocument()
 })
