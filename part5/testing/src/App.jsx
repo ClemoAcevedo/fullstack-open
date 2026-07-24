@@ -6,15 +6,19 @@ import {
   useMatch
 } from 'react-router-dom'
 
+import { AppBar, Button, Container, Toolbar } from '@mui/material'
+
 import Footer from './components/Footer'
 import Home from './components/Home'
 import Note from './components/Note'
 import NoteForm from './components/NoteForm'
 import NoteList from './components/NoteList'
+import Notification from './components/Notification'
 import noteService from './services/notes'
 
 const App = () => {
   const [notes, setNotes] = useState([])
+  const [notification, setNotification] = useState(null)
 
   useEffect(() => {
     noteService.getAll().then(initialNotes => {
@@ -25,11 +29,17 @@ const App = () => {
   const addNote = noteObject => {
     noteService.create(noteObject).then(returnedNote => {
       setNotes(notes.concat(returnedNote))
+
+      setNotification({
+        text: `Note '${returnedNote.content}' added!`,
+        type: 'success'
+      })
     })
   }
 
   const toggleImportanceOf = id => {
     const note = notes.find(n => n.id === id)
+
     const changedNote = {
       ...note,
       important: !note.important
@@ -61,56 +71,63 @@ const App = () => {
     ? notes.find(note => note.id === match.params.id)
     : null
 
-  const padding = {
-    padding: 5
-  }
+  const style = { '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' } }
+
 
   return (
-    <div>
+    <Container>
       <div>
-        <Link style={padding} to="/">
-          home
-        </Link>
+        <AppBar position="static">
+          <Toolbar>
+            <Button color="inherit" component={Link} to="/" sx={style}>
+              home
+            </Button>
+            <Button color="inherit" component={Link} to="/notes" sx={style}>
+              notes
+            </Button>
+            <Button color="inherit" component={Link} to="/create" sx={style}>
+              new note
+            </Button>
+          </Toolbar>
+        </AppBar>
 
-        <Link style={padding} to="/notes">
-          notes
-        </Link>
+        <Notification notification={notification} />
 
-        <Link style={padding} to="/create">
-          new note
-        </Link>
+        <Routes>
+          <Route
+            path="/notes/:id"
+            element={
+              <Note
+                note={note}
+                toggleImportanceOf={toggleImportanceOf}
+                deleteNote={deleteNote}
+              />
+            }
+          />
+
+          <Route
+            path="/notes"
+            element={
+              <NoteList notes={notes} />
+            }
+          />
+
+          <Route
+            path="/create"
+            element={
+              <NoteForm createNote={addNote} />
+            }
+          />
+
+          <Route
+            path="/"
+            element={<Home />}
+          />
+        </Routes>
+
+        <Footer />
       </div>
-
-      <Routes>
-        <Route
-          path="/notes/:id"
-          element={
-            <Note
-              note={note}
-              toggleImportanceOf={toggleImportanceOf}
-              deleteNote={deleteNote}
-            />
-          }
-        />
-
-        <Route
-          path="/notes"
-          element={<NoteList notes={notes} />}
-        />
-
-        <Route
-          path="/create"
-          element={<NoteForm createNote={addNote} />}
-        />
-
-        <Route
-          path="/"
-          element={<Home />}
-        />
-      </Routes>
-
-      <Footer />
-    </div>
+    </Container>
   )
 }
 

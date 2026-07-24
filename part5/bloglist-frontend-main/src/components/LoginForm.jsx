@@ -1,3 +1,11 @@
+import {
+  Box,
+  Button,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material'
 import { useState } from 'react'
 
 const LoginForm = ({ handleLogin }) => {
@@ -16,32 +24,57 @@ const LoginForm = ({ handleLogin }) => {
   }
 
   return (
-    <form onSubmit={submit}>
-      <h1>Login</h1>
+    <Paper
+      variant="outlined"
+      sx={{
+        maxWidth: 480,
+        mx: 'auto',
+        p: { xs: 3, sm: 4 },
+      }}
+    >
+      <Box component="form" onSubmit={submit}>
+        <Stack spacing={3}>
+          <Box>
+            <Typography component="h1" variant="h4" gutterBottom>
+              Login
+            </Typography>
+            <Typography color="text.secondary">
+              Sign in to create and manage blogs.
+            </Typography>
+          </Box>
 
-      <div>
-        <label>
-          username
-          <input
+          <TextField
+            label="username"
+            name="username"
+            autoComplete="username"
+            required
+            fullWidth
             value={username}
             onChange={({ target }) => setUsername(target.value)}
           />
-        </label>
-      </div>
 
-      <div>
-        <label>
-          password
-          <input
+          <TextField
+            label="password"
+            name="password"
             type="password"
+            autoComplete="current-password"
+            required
+            fullWidth
             value={password}
             onChange={({ target }) => setPassword(target.value)}
           />
-        </label>
-      </div>
 
-      <button type="submit">login</button>
-    </form>
+          <Button
+            type="submit"
+            variant="contained"
+            size="large"
+            fullWidth
+          >
+            login
+          </Button>
+        </Stack>
+      </Box>
+    </Paper>
   )
 }
 

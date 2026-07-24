@@ -1,3 +1,11 @@
+import {
+  Box,
+  Button,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material'
 import { useState } from 'react'
 
 const BlogForm = ({ createBlog }) => {
@@ -20,44 +28,67 @@ const BlogForm = ({ createBlog }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h3>create new</h3>
+    <Paper
+      variant="outlined"
+      sx={{
+        maxWidth: 640,
+        mx: 'auto',
+        p: { xs: 3, sm: 4 },
+      }}
+    >
+      <Box component="form" onSubmit={handleSubmit}>
+        <Stack spacing={3}>
+          <Box>
+            <Typography component="h1" variant="h4" gutterBottom>
+              Create new blog
+            </Typography>
+            <Typography color="text.secondary">
+              Add an article to your reading list.
+            </Typography>
+          </Box>
 
-      <div>
-        <label>
-          Title
-          <input
+          <TextField
+            label="Title"
+            name="title"
             type="text"
+            required
+            fullWidth
             value={title}
             onChange={({ target }) => setTitle(target.value)}
           />
-        </label>
-      </div>
 
-      <div>
-        <label>
-          Author
-          <input
+          <TextField
+            label="Author"
+            name="author"
             type="text"
+            required
+            fullWidth
             value={author}
             onChange={({ target }) => setAuthor(target.value)}
           />
-        </label>
-      </div>
 
-      <div>
-        <label>
-          URL
-          <input
-            type="text"
+          <TextField
+            label="URL"
+            name="url"
+            type="url"
+            placeholder="https://example.com/article"
+            required
+            fullWidth
             value={url}
             onChange={({ target }) => setUrl(target.value)}
           />
-        </label>
-      </div>
 
-      <button type="submit">create</button>
-    </form>
+          <Button
+            type="submit"
+            variant="contained"
+            size="large"
+            sx={{ alignSelf: { sm: 'flex-start' }, minWidth: 140 }}
+          >
+            create
+          </Button>
+        </Stack>
+      </Box>
+    </Paper>
   )
 }
 

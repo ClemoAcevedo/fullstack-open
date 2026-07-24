@@ -7,9 +7,19 @@ import LoginForm from './LoginForm'
 import Notification from './Notification'
 import Togglable from './Togglable'
 
+import {
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow
+} from '@mui/material'
+
 const NoteList = ({ notes }) => {
   const [showAll, setShowAll] = useState(true)
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [notification, setNotification] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -43,10 +53,13 @@ const NoteList = ({ notes }) => {
       setUsername('')
       setPassword('')
     } catch {
-      setErrorMessage('wrong credentials')
+      setNotification({
+        text: 'wrong credentials',
+        type: 'error'
+      })
 
       setTimeout(() => {
-        setErrorMessage(null)
+        setNotification(null)
       }, 5000)
     }
   }
@@ -73,9 +86,7 @@ const NoteList = ({ notes }) => {
 
   return (
     <div>
-      <h1>Notes</h1>
-
-      <Notification message={errorMessage} />
+      <Notification notification={notification} />
 
       {!user && loginForm()}
 
@@ -85,15 +96,39 @@ const NoteList = ({ notes }) => {
         </button>
       </div>
 
-      <ul>
-        {notesToShow.map(note => (
-          <li key={note.id}>
-            <Link to={`/notes/${note.id}`}>
-              {note.content}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <h2>Notes</h2>
+
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>content</TableCell>
+              <TableCell>user</TableCell>
+              <TableCell>important</TableCell>
+            </TableRow>
+          </TableHead>
+
+          <TableBody>
+            {notesToShow.map(note => (
+              <TableRow key={note.id}>
+                <TableCell>
+                  <Link to={`/notes/${note.id}`}>
+                    {note.content}
+                  </Link>
+                </TableCell>
+
+                <TableCell>
+                  {note.user?.name}
+                </TableCell>
+
+                <TableCell>
+                  {note.important ? 'yes' : ''}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   )
 }

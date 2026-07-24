@@ -1,29 +1,50 @@
+import {
+  Box,
+  Link as MuiLink,
+  Paper,
+  Stack,
+  Typography,
+} from '@mui/material'
 import { Link } from 'react-router-dom'
 
 const BlogList = ({ blogs }) => {
   return (
-    <div>
-      <h2>blogs</h2>
+    <Box>
+      <Typography component="h1" variant="h3" sx={{ mb: 3 }}>
+        Blogs
+      </Typography>
 
-      {[...blogs]
-        .sort((a, b) => b.likes - a.likes)
-        .map(blog => (
-          <div
-            key={blog.id}
-            style={{
-              border: '1px solid black',
-              padding: '8px',
-              marginBottom: '8px',
-              borderRadius: '4px'
-            }}
-          >
-            <Link to={`/blogs/${blog.id}`}>
-              {blog.title}
-            </Link>{' '}
-            {blog.author}
-          </div>
-        ))}
-    </div>
+      <Stack spacing={1.5}>
+        {[...blogs]
+          .sort((a, b) => b.likes - a.likes)
+          .map(blog => (
+            <Paper
+              key={blog.id}
+              variant="outlined"
+              sx={{
+                p: 2,
+                transition: 'border-color 150ms, box-shadow 150ms',
+                '&:hover': {
+                  borderColor: 'primary.main',
+                  boxShadow: 1,
+                },
+              }}
+            >
+              <MuiLink
+                component={Link}
+                to={`/blogs/${blog.id}`}
+                variant="h6"
+                underline="hover"
+              >
+                {blog.title}
+              </MuiLink>
+              <Typography color="text.secondary">
+                {blog.author}
+              </Typography>
+            </Paper>
+          ))}
+      </Stack>
+    </Box>
   )
 }
 

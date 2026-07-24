@@ -1,12 +1,18 @@
-const Notification = ({ message, type }) => {
-  if (message === null) {
-    return null
-  }
+import { Alert, Collapse } from '@mui/material'
 
+const Notification = ({ message, type }) => {
   return (
-    <div className={type}>
-      {message}
-    </div>
+    <Collapse in={message !== null}>
+      {message !== null && (
+        <Alert
+          severity={type === 'error' ? 'error' : 'success'}
+          variant="filled"
+          sx={{ mb: 3 }}
+        >
+          {message}
+        </Alert>
+      )}
+    </Collapse>
   )
 }
 

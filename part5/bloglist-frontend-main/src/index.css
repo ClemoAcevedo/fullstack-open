@@ -1,17 +1,9 @@
-.success {
-  color: green;
-  background: lightgray;
-  border: 2px solid green;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 10px;
+html {
+  min-width: 320px;
 }
 
-.error {
-  color: red;
-  background: lightgray;
-  border: 2px solid red;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 10px;
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
 }
