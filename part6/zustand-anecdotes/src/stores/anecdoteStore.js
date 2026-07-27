@@ -11,7 +11,7 @@ const anecdotesAtStart = [
 
 const getId = () => (100000 * Math.random()).toFixed(0)
 
-const asObject = anecdote => ({
+const asObject = (anecdote) => ({
   content: anecdote,
   id: getId(),
   votes: 0
@@ -19,6 +19,8 @@ const asObject = anecdote => ({
 
 const useAnecdoteStore = create((set) => ({
   anecdotes: anecdotesAtStart.map(asObject),
+  filter: '',
+
   actions: {
     vote: (id) =>
       set((state) => ({
@@ -26,15 +28,28 @@ const useAnecdoteStore = create((set) => ({
           anecdote.id === id
             ? { ...anecdote, votes: anecdote.votes + 1 }
             : anecdote
-        ),
+        )
       })),
 
     create: (content) =>
       set((state) => ({
-        anecdotes: [...state.anecdotes, asObject(content)],
+        anecdotes: [...state.anecdotes, asObject(content)]
       })),
-  },
+
+    setFilter: (value) =>
+      set({
+        filter: value
+      })
+  }
 }))
 
-export const useAnecdotes = () => useAnecdoteStore((state) => state.anecdotes)
-export const useAnecdoteActions = () => useAnecdoteStore((state) => state.actions)
+export const useAnecdotes = () =>
+  useAnecdoteStore((state) => state.anecdotes)
+
+export const useFilter = () =>
+  useAnecdoteStore((state) => state.filter)
+
+export const useAnecdoteActions = () =>
+  useAnecdoteStore((state) => state.actions)
+
+export default useAnecdoteStore
