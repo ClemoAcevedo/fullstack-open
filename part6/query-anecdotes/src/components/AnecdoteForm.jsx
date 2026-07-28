@@ -1,7 +1,7 @@
 import { useAnecdotes } from '../hooks/useAnecdotes'
 
-const AnecdoteForm = ({ setNotification }) => {
-  const { addAnecdote } = useAnecdotes(setNotification)
+const AnecdoteForm = () => {
+  const { addAnecdote } = useAnecdotes()
 
   const onCreate = (event) => {
     event.preventDefault()

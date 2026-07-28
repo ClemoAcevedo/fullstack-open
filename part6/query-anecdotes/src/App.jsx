@@ -1,18 +1,14 @@
-import { useState } from 'react'
-
 import AnecdoteForm from './components/AnecdoteForm'
 import Notification from './components/Notification'
 import { useAnecdotes } from './hooks/useAnecdotes'
 
 const App = () => {
-  const [notification, setNotification] = useState('')
-
   const {
     anecdotes,
     isPending,
     isError,
     voteAnecdote,
-  } = useAnecdotes(setNotification)
+  } = useAnecdotes()
 
   if (isPending) {
     return <div>loading data...</div>
@@ -30,9 +26,9 @@ const App = () => {
     <div>
       <h3>Anecdote app</h3>
 
-      <Notification message={notification} />
+      <Notification />
 
-      <AnecdoteForm setNotification={setNotification} />
+      <AnecdoteForm />
 
       {anecdotes.map((anecdote) => (
         <div key={anecdote.id}>

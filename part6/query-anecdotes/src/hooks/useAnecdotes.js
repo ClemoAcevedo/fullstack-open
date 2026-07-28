@@ -9,21 +9,11 @@ import {
   getAnecdotes,
   updateAnecdote,
 } from '../requests'
+import { useNotify } from '../NotificationContext'
 
-export const useAnecdotes = (setNotification) => {
+export const useAnecdotes = () => {
   const queryClient = useQueryClient()
-
-  const showNotification = (message) => {
-    if (!setNotification) {
-      return
-    }
-
-    setNotification(message)
-
-    setTimeout(() => {
-      setNotification('')
-    }, 5000)
-  }
+  const notify = useNotify()
 
   const result = useQuery({
     queryKey: ['anecdotes'],
@@ -40,11 +30,11 @@ export const useAnecdotes = (setNotification) => {
         oldAnecdotes.concat(newAnecdote)
       )
 
-      showNotification(`Created "${newAnecdote.content}"`)
+      notify(`Created "${newAnecdote.content}"`)
     },
 
     onError: (error) => {
-      showNotification(error.message)
+      notify(error.message)
     },
   })
 
@@ -60,11 +50,11 @@ export const useAnecdotes = (setNotification) => {
         )
       )
 
-      showNotification(`You voted "${updatedAnecdote.content}"`)
+      notify(`You voted "${updatedAnecdote.content}"`)
     },
 
     onError: (error) => {
-      showNotification(error.message)
+      notify(error.message)
     },
   })
 
