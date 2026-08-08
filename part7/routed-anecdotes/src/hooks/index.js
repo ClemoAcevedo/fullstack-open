@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import anecdoteService from '../services/anecdotes'
 
 
 export const useField = (type) => {
@@ -24,4 +25,14 @@ export const useField = (type) => {
 
 export const useAnotherHook = () => {
   // ...
+}
+
+export const useAnecdotes = () => {
+  const [anecdotes, setAnecdotes] = useState([])
+
+  useEffect(() => {
+    anecdoteService.getAll().then(data => setAnecdotes(data))
+  }, [])
+
+  return { anecdotes }
 }
