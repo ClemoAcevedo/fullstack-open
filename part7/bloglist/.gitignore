@@ -8,5 +8,8 @@ server/.env
 *.log
 .DS_Store
 .vscode/
+!.vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
 .idea/
 *.local
