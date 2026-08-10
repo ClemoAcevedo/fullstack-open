@@ -6,6 +6,7 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import {
   Link,
@@ -25,10 +26,24 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
 
   const notificationDispatch = useNotificationDispatch()
+  const queryClient = useQueryClient()
+
+  const { data: blogs = [] } = useQuery({
+    queryKey: ['blogs'],
+    queryFn: blogService.getAll,
+  })
+
+  const newBlogMutation = useMutation({
+    mutationFn: blogService.create,
+    onSuccess: returnedBlog => {
+      queryClient.setQueryData(['blogs'], (previousBlogs = []) =>
+        previousBlogs.concat({ ...returnedBlog, user })
+      )
+    },
+  })
 
   const navigate = useNavigate()
 
@@ -42,12 +57,6 @@ const App = () => {
       notificationDispatch({ type: 'CLEAR_NOTIFICATION' })
     }, 5000)
   }
-
-  useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs)
-    )
-  }, [])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
@@ -97,16 +106,7 @@ const App = () => {
 
   const handleCreation = async (blogObject) => {
     try {
-      const returnedBlog = await blogService.create(blogObject)
-
-      const blogWithUser = {
-        ...returnedBlog,
-        user
-      }
-
-      setBlogs(prevBlogs =>
-        prevBlogs.concat(blogWithUser)
-      )
+      const returnedBlog = await newBlogMutation.mutateAsync(blogObject)
 
       showNotification(
         `a new blog ${returnedBlog.title} by ${returnedBlog.author}`,
@@ -136,9 +136,11 @@ const App = () => {
         user: blogObject.user
       }
 
-      setBlogs(blogs.map(blog =>
-        blog.id === blogWithUser.id ? blogWithUser : blog
-      ))
+      queryClient.setQueryData(['blogs'], (previousBlogs = []) =>
+        previousBlogs.map(blog =>
+          blog.id === blogWithUser.id ? blogWithUser : blog
+        )
+      )
     } catch (error) {
       console.log(error)
     }
@@ -154,8 +156,8 @@ const App = () => {
     try {
       await blogService.remove(blog.id)
 
-      setBlogs(prevBlogs =>
-        prevBlogs.filter(b => b.id !== blog.id)
+      queryClient.setQueryData(['blogs'], (previousBlogs = []) =>
+        previousBlogs.filter(b => b.id !== blog.id)
       )
 
       navigate('/')
