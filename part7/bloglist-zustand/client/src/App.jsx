@@ -6,7 +6,7 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import {
   Link,
   Route,
@@ -24,16 +24,17 @@ import blogService from './services/blogs'
 import useBlogStore from './stores/blogStore'
 import loginService from './services/login'
 import useNotificationStore from './stores/notificationStore'
+import useUserStore from './stores/userStore'
 
 const App = () => {
-  const [user, setUser] = useState(null)
-
   const blogs = useBlogStore((state) => state.blogs)
   const setBlogs = useBlogStore((state) => state.setBlogs)
   const addBlog = useBlogStore((state) => state.addBlog)
   const updateBlog = useBlogStore((state) => state.updateBlog)
   const removeBlog = useBlogStore((state) => state.removeBlog)
   const { setNotification, clearNotification } = useNotificationStore()
+  const user = useUserStore((state) => state.user)
+  const setUser = useUserStore((state) => state.setUser)
 
   const navigate = useNavigate()
 
@@ -51,7 +52,7 @@ const App = () => {
       setUser(user)
       blogService.setToken(user.token)
     }
-  }, [])
+  }, [setUser])
 
   const match = useMatch('/blogs/:id')
 
