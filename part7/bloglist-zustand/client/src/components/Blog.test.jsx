@@ -27,7 +27,12 @@ test('unauthenticated user sees blog information and likes but no buttons', () =
   expect(screen.getByText(`${blog.likes} likes`)).toBeInTheDocument()
   expect(screen.getByText(`added by ${blog.user.name}`)).toBeInTheDocument()
 
-  expect(screen.queryByRole('button')).not.toBeInTheDocument()
+  expect(
+    screen.queryByRole('button', { name: /like/i })
+  ).not.toBeInTheDocument()
+  expect(
+    screen.queryByRole('button', { name: /remove/i })
+  ).not.toBeInTheDocument()
 })
 
 test('authenticated user who is not the creator sees only the like button', () => {

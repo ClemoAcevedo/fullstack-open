@@ -4,14 +4,27 @@ import {
   Chip,
   Divider,
   Link,
+  List,
+  ListItem,
   Paper,
   Stack,
+  TextField,
   Typography,
 } from '@mui/material'
+import useField from '../hooks/useField'
 
-const Blog = ({ blog, user, handleLike, handleRemove }) => {
+const Blog = ({ blog, user, handleLike, handleComment, handleRemove }) => {
+  const { reset: resetComment, ...comment } = useField('text')
+
   if (!blog) {
     return null
+  }
+
+  const submitComment = async (event) => {
+    event.preventDefault()
+
+    await handleComment(blog, comment.value)
+    resetComment()
   }
 
   return (
@@ -86,6 +99,39 @@ const Blog = ({ blog, user, handleLike, handleRemove }) => {
             <Typography color="text.secondary">
               added by {blog.user.name}
             </Typography>
+          </Box>
+
+          <Divider />
+
+          <Box component="section">
+            <Typography component="h2" variant="h5" sx={{ mb: 2 }}>
+              Comments
+            </Typography>
+
+            <Box
+              component="form"
+              onSubmit={submitComment}
+              sx={{ display: 'flex', gap: 1, mb: 2 }}
+            >
+              <TextField
+                label="Comment"
+                required
+                size="small"
+                fullWidth
+                {...comment}
+              />
+              <Button type="submit" variant="contained">
+                add comment
+              </Button>
+            </Box>
+
+            <List disablePadding>
+              {blog.comments?.map((comment, index) => (
+                <ListItem key={`${comment}-${index}`} disableGutters>
+                  {comment}
+                </ListItem>
+              ))}
+            </List>
           </Box>
         </Stack>
       </Box>

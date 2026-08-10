@@ -154,6 +154,19 @@ const App = () => {
     }
   }
 
+  const handleComment = async (blog, comment) => {
+    try {
+      const returnedBlog = await blogService.addComment(blog.id, comment)
+
+      updateBlog({
+        ...returnedBlog,
+        user: blog.user,
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const handleRemove = async (blog) => {
     const ok = window.confirm(
       `Remove blog ${blog.title} by ${blog.author}`
@@ -282,6 +295,7 @@ const App = () => {
                   blog={blog}
                   user={user}
                   handleLike={handleLike}
+                  handleComment={handleComment}
                   handleRemove={handleRemove}
                 />
               }
