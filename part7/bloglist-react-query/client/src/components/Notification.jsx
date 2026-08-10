@@ -1,15 +1,18 @@
 import { Alert, Collapse } from '@mui/material'
+import { useNotificationValue } from '../NotificationContext'
 
-const Notification = ({ message, type }) => {
+const Notification = () => {
+  const notification = useNotificationValue()
+
   return (
-    <Collapse in={message !== null}>
-      {message !== null && (
+    <Collapse in={notification !== null}>
+      {notification !== null && (
         <Alert
-          severity={type === 'error' ? 'error' : 'success'}
+          severity={notification.type === 'error' ? 'error' : 'success'}
           variant="filled"
           sx={{ mb: 3 }}
         >
-          {message}
+          {notification.message}
         </Alert>
       )}
     </Collapse>
