@@ -10,16 +10,11 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import userService from '../services/users'
+import useUsers from '../hooks/useUsers'
 
 const Users = () => {
-  const [users, setUsers] = useState([])
-
-  useEffect(() => {
-    userService.getAll().then(setUsers)
-  }, [])
+  const { data: users = [] } = useUsers()
 
   return (
     <Box sx={{ maxWidth: 820, mx: 'auto' }}>

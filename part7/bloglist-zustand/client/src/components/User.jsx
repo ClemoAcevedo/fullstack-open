@@ -5,19 +5,13 @@ import {
   Paper,
   Typography,
 } from '@mui/material'
-import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import userService from '../services/users'
+import useUsers from '../hooks/useUsers'
 
 const User = () => {
-  const [user, setUser] = useState(null)
   const { id } = useParams()
-
-  useEffect(() => {
-    userService.getAll().then(users => {
-      setUser(users.find(user => user.id === id))
-    })
-  }, [id])
+  const { data: users = [] } = useUsers()
+  const user = users.find(user => user.id === id)
 
   if (!user) return null
 
