@@ -1,6 +1,9 @@
 import { Alert, Collapse } from '@mui/material'
+import useNotificationStore from '../stores/notificationStore'
 
-const Notification = ({ message, type }) => {
+const Notification = () => {
+  const { message, type } = useNotificationStore()
+
   return (
     <Collapse in={message !== null}>
       {message !== null && (

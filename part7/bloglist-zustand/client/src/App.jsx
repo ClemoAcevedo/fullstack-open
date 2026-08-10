@@ -22,14 +22,13 @@ import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import useNotificationStore from './stores/notificationStore'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
 
-  // notifications
-  const [notificationMessage, setNotificationMessage] = useState(null)
-  const [notificationType, setNotificationType] = useState(null)
+  const { setNotification, clearNotification } = useNotificationStore()
 
   const navigate = useNavigate()
 
@@ -67,22 +66,18 @@ const App = () => {
       blogService.setToken(user.token)
       setUser(user)
 
-      setNotificationMessage('successful login')
-      setNotificationType('success')
+      setNotification('successful login', 'success')
 
       setTimeout(() => {
-        setNotificationMessage(null)
-        setNotificationType(null)
+        clearNotification()
       }, 5000)
 
       navigate('/')
     } catch {
-      setNotificationMessage('wrong username or password')
-      setNotificationType('error')
+      setNotification('wrong username or password', 'error')
 
       setTimeout(() => {
-        setNotificationMessage(null)
-        setNotificationType(null)
+        clearNotification()
       }, 5000)
     }
   }
@@ -92,12 +87,10 @@ const App = () => {
     blogService.setToken('')
     setUser(null)
 
-    setNotificationMessage('successful logout')
-    setNotificationType('success')
+    setNotification('successful logout', 'success')
 
     setTimeout(() => {
-      setNotificationMessage(null)
-      setNotificationType(null)
+      clearNotification()
     }, 5000)
 
     navigate('/')
@@ -116,24 +109,21 @@ const App = () => {
         prevBlogs.concat(blogWithUser)
       )
 
-      setNotificationMessage(
-        `a new blog ${returnedBlog.title} by ${returnedBlog.author}`
+      setNotification(
+        `a new blog ${returnedBlog.title} by ${returnedBlog.author}`,
+        'success'
       )
-      setNotificationType('success')
 
       setTimeout(() => {
-        setNotificationMessage(null)
-        setNotificationType(null)
+        clearNotification()
       }, 5000)
 
       navigate('/')
     } catch {
-      setNotificationMessage('error in the creation of the blog')
-      setNotificationType('error')
+      setNotification('error in the creation of the blog', 'error')
 
       setTimeout(() => {
-        setNotificationMessage(null)
-        setNotificationType(null)
+        clearNotification()
       }, 5000)
     }
   }
@@ -263,10 +253,7 @@ const App = () => {
         sx={{ py: { xs: 3, sm: 5 } }}
       >
         <ErrorBoundary>
-          <Notification
-            message={notificationMessage}
-            type={notificationType}
-          />
+          <Notification />
 
           <Routes>
             <Route
