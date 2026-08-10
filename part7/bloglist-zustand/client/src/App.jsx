@@ -167,6 +167,15 @@ const App = () => {
         prevBlogs.filter(b => b.id !== blog.id)
       )
 
+      setNotification(
+        `blog ${blog.title} by ${blog.author} was removed`,
+        'success'
+      )
+
+      setTimeout(() => {
+        clearNotification()
+      }, 5000)
+
       navigate('/')
     } catch (error) {
       console.log(error)
