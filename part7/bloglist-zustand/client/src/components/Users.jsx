@@ -22,28 +22,53 @@ const Users = () => {
   }, [])
 
   return (
-    <Box>
-      <Typography component="h1" variant="h3" sx={{ mb: 3 }}>
+    <Box sx={{ maxWidth: 820, mx: 'auto' }}>
+      <Typography component="h1" variant="h3" sx={{ mb: 1 }}>
         Users
       </Typography>
 
-      <TableContainer component={Paper} variant="outlined">
+      <Typography color="text.secondary" sx={{ mb: 3 }}>
+        Explore the people sharing their favourite reads.
+      </Typography>
+
+      <TableContainer
+        component={Paper}
+        variant="outlined"
+        sx={{ overflow: 'hidden' }}
+      >
         <Table aria-label="users">
-          <TableHead>
+          <TableHead sx={{ bgcolor: 'primary.main' }}>
             <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell align="right">Blogs created</TableCell>
+              <TableCell sx={{ color: 'primary.contrastText', fontWeight: 700 }}>
+                Name
+              </TableCell>
+              <TableCell
+                align="right"
+                sx={{ color: 'primary.contrastText', fontWeight: 700 }}
+              >
+                Blogs created
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {users.map(user => (
-              <TableRow key={user.id}>
+              <TableRow
+                key={user.id}
+                sx={{ '&:hover': { bgcolor: 'action.hover' } }}
+              >
                 <TableCell>
-                  <MuiLink component={Link} to={`/users/${user.id}`}>
+                  <MuiLink
+                    component={Link}
+                    to={`/users/${user.id}`}
+                    underline="hover"
+                    sx={{ fontWeight: 600 }}
+                  >
                     {user.name}
                   </MuiLink>
                 </TableCell>
-                <TableCell align="right">{user.blogs.length}</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 700 }}>
+                  {user.blogs.length}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

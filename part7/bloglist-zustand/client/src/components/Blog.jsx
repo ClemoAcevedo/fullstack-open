@@ -103,15 +103,26 @@ const Blog = ({ blog, user, handleLike, handleComment, handleRemove }) => {
 
           <Divider />
 
-          <Box component="section">
-            <Typography component="h2" variant="h5" sx={{ mb: 2 }}>
-              Comments
-            </Typography>
+          <Box
+            component="section"
+            sx={{ p: { xs: 2, sm: 3 }, bgcolor: 'action.hover', borderRadius: 2 }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+              <Typography component="h2" variant="h5">
+                Comments
+              </Typography>
+              <Chip label={blog.comments?.length ?? 0} size="small" />
+            </Box>
 
             <Box
               component="form"
               onSubmit={submitComment}
-              sx={{ display: 'flex', gap: 1, mb: 2 }}
+              sx={{
+                display: 'flex',
+                gap: 1,
+                mb: 2,
+                flexDirection: { xs: 'column', sm: 'row' },
+              }}
             >
               <TextField
                 label="Comment"
@@ -120,14 +131,24 @@ const Blog = ({ blog, user, handleLike, handleComment, handleRemove }) => {
                 fullWidth
                 {...comment}
               />
-              <Button type="submit" variant="contained">
+              <Button type="submit" variant="contained" sx={{ whiteSpace: 'nowrap' }}>
                 add comment
               </Button>
             </Box>
 
             <List disablePadding>
               {blog.comments?.map((comment, index) => (
-                <ListItem key={`${comment}-${index}`} disableGutters>
+                <ListItem
+                  key={`${comment}-${index}`}
+                  disableGutters
+                  sx={{
+                    px: 1.5,
+                    py: 1,
+                    bgcolor: 'background.paper',
+                    borderRadius: 1,
+                    '&:not(:last-child)': { mb: 1 },
+                  }}
+                >
                   {comment}
                 </ListItem>
               ))}
