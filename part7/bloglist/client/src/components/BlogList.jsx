@@ -8,6 +8,7 @@ import {
 import { Link } from 'react-router-dom'
 
 const BlogList = ({ blogs }) => {
+
   return (
     <Box>
       <Typography component="h1" variant="h3" sx={{ mb: 3 }}>

@@ -303,6 +303,11 @@ const App = () => {
                   : <LoginForm handleLogin={handleLogin} />
               }
             />
+
+            <Route
+              path="*"
+              element={<Typography variant="h3">Page not found</Typography>}
+            />
           </Routes>
         </ErrorBoundary>
       </Container>
