@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter as Router } from 'react-router-dom'
 import App from './App'
 import { NotificationContextProvider } from './NotificationContext'
+import { UserContextProvider } from './UserContext'
 import './index.css'
 
 const theme = createTheme({
@@ -57,7 +58,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <CssBaseline />
       <Router>
         <NotificationContextProvider>
-          <App />
+          <UserContextProvider>
+            <App />
+          </UserContextProvider>
         </NotificationContextProvider>
       </Router>
     </ThemeProvider>

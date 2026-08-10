@@ -7,7 +7,7 @@ import {
   Typography,
 } from '@mui/material'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import {
   Link,
   Route,
@@ -22,13 +22,14 @@ import BlogList from './components/BlogList'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
 import { useNotificationDispatch } from './NotificationContext'
+import { useUserDispatch, useUserValue } from './UserContext'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
-  const [user, setUser] = useState(null)
-
   const notificationDispatch = useNotificationDispatch()
+  const user = useUserValue()
+  const userDispatch = useUserDispatch()
   const queryClient = useQueryClient()
 
   const { data: blogs = [] } = useQuery({
@@ -88,10 +89,10 @@ const App = () => {
 
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+      userDispatch({ type: 'SET_USER', payload: user })
       blogService.setToken(user.token)
     }
-  }, [])
+  }, [userDispatch])
 
   const match = useMatch('/blogs/:id')
 
@@ -109,7 +110,7 @@ const App = () => {
       )
 
       blogService.setToken(user.token)
-      setUser(user)
+      userDispatch({ type: 'SET_USER', payload: user })
 
       showNotification('successful login', 'success')
 
@@ -122,7 +123,7 @@ const App = () => {
   const handleLogout = () => {
     window.localStorage.removeItem('loggedNoteappUser')
     blogService.setToken('')
-    setUser(null)
+    userDispatch({ type: 'CLEAR_USER' })
 
     showNotification('successful logout', 'success')
 
