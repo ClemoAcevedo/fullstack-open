@@ -20,6 +20,7 @@ import BlogForm from './components/BlogForm'
 import BlogList from './components/BlogList'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
+import User from './components/User'
 import Users from './components/Users'
 import blogService from './services/blogs'
 import { getUser, removeUser, saveUser } from './services/persistentUser'
@@ -287,6 +288,8 @@ const App = () => {
             />
 
             <Route path="/users" element={<Users />} />
+
+            <Route path="/users/:id" element={<User />} />
 
             <Route
               path="/login"

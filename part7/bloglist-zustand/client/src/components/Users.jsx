@@ -1,5 +1,6 @@
 import {
   Box,
+  Link as MuiLink,
   Paper,
   Table,
   TableBody,
@@ -10,6 +11,7 @@ import {
   Typography,
 } from '@mui/material'
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import userService from '../services/users'
 
 const Users = () => {
@@ -36,7 +38,11 @@ const Users = () => {
           <TableBody>
             {users.map(user => (
               <TableRow key={user.id}>
-                <TableCell>{user.name}</TableCell>
+                <TableCell>
+                  <MuiLink component={Link} to={`/users/${user.id}`}>
+                    {user.name}
+                  </MuiLink>
+                </TableCell>
                 <TableCell align="right">{user.blogs.length}</TableCell>
               </TableRow>
             ))}
