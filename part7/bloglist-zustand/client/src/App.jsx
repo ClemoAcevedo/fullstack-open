@@ -21,13 +21,18 @@ import BlogList from './components/BlogList'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
 import blogService from './services/blogs'
+import useBlogStore from './stores/blogStore'
 import loginService from './services/login'
 import useNotificationStore from './stores/notificationStore'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
 
+  const blogs = useBlogStore((state) => state.blogs)
+  const setBlogs = useBlogStore((state) => state.setBlogs)
+  const addBlog = useBlogStore((state) => state.addBlog)
+  const updateBlog = useBlogStore((state) => state.updateBlog)
+  const removeBlog = useBlogStore((state) => state.removeBlog)
   const { setNotification, clearNotification } = useNotificationStore()
 
   const navigate = useNavigate()
@@ -36,7 +41,7 @@ const App = () => {
     blogService.getAll().then(blogs =>
       setBlogs(blogs)
     )
-  }, [])
+  }, [setBlogs])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
@@ -105,9 +110,7 @@ const App = () => {
         user
       }
 
-      setBlogs(prevBlogs =>
-        prevBlogs.concat(blogWithUser)
-      )
+      addBlog(blogWithUser)
 
       setNotification(
         `a new blog ${returnedBlog.title} by ${returnedBlog.author}`,
@@ -145,9 +148,7 @@ const App = () => {
         user: blogObject.user
       }
 
-      setBlogs(blogs.map(blog =>
-        blog.id === blogWithUser.id ? blogWithUser : blog
-      ))
+      updateBlog(blogWithUser)
     } catch (error) {
       console.log(error)
     }
@@ -163,9 +164,7 @@ const App = () => {
     try {
       await blogService.remove(blog.id)
 
-      setBlogs(prevBlogs =>
-        prevBlogs.filter(b => b.id !== blog.id)
-      )
+      removeBlog(blog.id)
 
       setNotification(
         `blog ${blog.title} by ${blog.author} was removed`,
@@ -268,7 +267,7 @@ const App = () => {
             <Route
               path="/"
               element={
-                <BlogList blogs={blogs} />
+                <BlogList />
               }
             />
 

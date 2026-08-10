@@ -6,8 +6,10 @@ import {
   Typography,
 } from '@mui/material'
 import { Link } from 'react-router-dom'
+import useBlogStore from '../stores/blogStore'
 
-const BlogList = ({ blogs }) => {
+const BlogList = () => {
+  const blogs = useBlogStore((state) => state.blogs)
 
   return (
     <Box>
