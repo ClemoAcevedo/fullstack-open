@@ -6,21 +6,21 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import { useState } from 'react'
+import useField from '../hooks/useField'
 
 const LoginForm = ({ handleLogin }) => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  const username = useField('text')
+  const { reset: resetPassword, ...password } = useField('password')
 
   const submit = (event) => {
     event.preventDefault()
 
     handleLogin({
-      username,
-      password,
+      username: username.value,
+      password: password.value,
     })
 
-    setPassword('')
+    resetPassword()
   }
 
   return (
@@ -49,19 +49,16 @@ const LoginForm = ({ handleLogin }) => {
             autoComplete="username"
             required
             fullWidth
-            value={username}
-            onChange={({ target }) => setUsername(target.value)}
+            {...username}
           />
 
           <TextField
             label="password"
             name="password"
-            type="password"
             autoComplete="current-password"
             required
             fullWidth
-            value={password}
-            onChange={({ target }) => setPassword(target.value)}
+            {...password}
           />
 
           <Button

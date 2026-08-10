@@ -6,25 +6,25 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import { useState } from 'react'
+import useField from '../hooks/useField'
 
 const BlogForm = ({ createBlog }) => {
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
+  const { reset: resetTitle, ...title } = useField('text')
+  const { reset: resetAuthor, ...author } = useField('text')
+  const { reset: resetUrl, ...url } = useField('url')
 
   const handleSubmit = async (event) => {
     event.preventDefault()
 
     await createBlog({
-      title,
-      author,
-      url
+      title: title.value,
+      author: author.value,
+      url: url.value
     })
 
-    setTitle('')
-    setAuthor('')
-    setUrl('')
+    resetTitle()
+    resetAuthor()
+    resetUrl()
   }
 
   return (
@@ -50,32 +50,26 @@ const BlogForm = ({ createBlog }) => {
           <TextField
             label="Title"
             name="title"
-            type="text"
             required
             fullWidth
-            value={title}
-            onChange={({ target }) => setTitle(target.value)}
+            {...title}
           />
 
           <TextField
             label="Author"
             name="author"
-            type="text"
             required
             fullWidth
-            value={author}
-            onChange={({ target }) => setAuthor(target.value)}
+            {...author}
           />
 
           <TextField
             label="URL"
             name="url"
-            type="url"
             placeholder="https://example.com/article"
             required
             fullWidth
-            value={url}
-            onChange={({ target }) => setUrl(target.value)}
+            {...url}
           />
 
           <Button

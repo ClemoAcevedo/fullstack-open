@@ -21,6 +21,7 @@ import BlogList from './components/BlogList'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
 import blogService from './services/blogs'
+import { getUser, removeUser, saveUser } from './services/persistentUser'
 import useBlogStore from './stores/blogStore'
 import loginService from './services/login'
 import useNotificationStore from './stores/notificationStore'
@@ -45,10 +46,9 @@ const App = () => {
   }, [setBlogs])
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
+    const user = getUser()
 
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
+    if (user) {
       setUser(user)
       blogService.setToken(user.token)
     }
@@ -64,10 +64,7 @@ const App = () => {
     try {
       const user = await loginService.login({ username, password })
 
-      window.localStorage.setItem(
-        'loggedNoteappUser',
-        JSON.stringify(user)
-      )
+      saveUser(user)
 
       blogService.setToken(user.token)
       setUser(user)
@@ -89,7 +86,7 @@ const App = () => {
   }
 
   const handleLogout = () => {
-    window.localStorage.removeItem('loggedNoteappUser')
+    removeUser()
     blogService.setToken('')
     setUser(null)
 
