@@ -45,6 +45,31 @@ const App = () => {
     },
   })
 
+  const updateBlogMutation = useMutation({
+    mutationFn: ({ id, blog }) => blogService.update(id, blog),
+    onSuccess: (returnedBlog, { blog }) => {
+      const blogWithUser = {
+        ...returnedBlog,
+        user: blog.user
+      }
+
+      queryClient.setQueryData(['blogs'], (previousBlogs = []) =>
+        previousBlogs.map(blog =>
+          blog.id === blogWithUser.id ? blogWithUser : blog
+        )
+      )
+    },
+  })
+
+  const removeBlogMutation = useMutation({
+    mutationFn: blogService.remove,
+    onSuccess: (_, id) => {
+      queryClient.setQueryData(['blogs'], (previousBlogs = []) =>
+        previousBlogs.filter(blog => blog.id !== id)
+      )
+    },
+  })
+
   const navigate = useNavigate()
 
   const showNotification = (message, type) => {
@@ -126,21 +151,10 @@ const App = () => {
     }
 
     try {
-      const returnedBlog = await blogService.update(
-        blogObject.id,
-        updatedBlog
-      )
-
-      const blogWithUser = {
-        ...returnedBlog,
-        user: blogObject.user
-      }
-
-      queryClient.setQueryData(['blogs'], (previousBlogs = []) =>
-        previousBlogs.map(blog =>
-          blog.id === blogWithUser.id ? blogWithUser : blog
-        )
-      )
+      await updateBlogMutation.mutateAsync({
+        id: blogObject.id,
+        blog: updatedBlog
+      })
     } catch (error) {
       console.log(error)
     }
@@ -154,11 +168,7 @@ const App = () => {
     if (!ok) return
 
     try {
-      await blogService.remove(blog.id)
-
-      queryClient.setQueryData(['blogs'], (previousBlogs = []) =>
-        previousBlogs.filter(b => b.id !== blog.id)
-      )
+      await removeBlogMutation.mutateAsync(blog.id)
 
       navigate('/')
     } catch (error) {
