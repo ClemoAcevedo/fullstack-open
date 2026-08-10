@@ -20,6 +20,7 @@ import BlogForm from './components/BlogForm'
 import BlogList from './components/BlogList'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
+import Users from './components/Users'
 import blogService from './services/blogs'
 import { getUser, removeUser, saveUser } from './services/persistentUser'
 import useBlogStore from './stores/blogStore'
@@ -211,6 +212,10 @@ const App = () => {
                 blogs
               </Button>
 
+              <Button component={Link} to="/users" color="inherit">
+                users
+              </Button>
+
               {!user && (
                 <Button component={Link} to="/login" color="inherit">
                   login
@@ -280,6 +285,8 @@ const App = () => {
                 />
               }
             />
+
+            <Route path="/users" element={<Users />} />
 
             <Route
               path="/login"
