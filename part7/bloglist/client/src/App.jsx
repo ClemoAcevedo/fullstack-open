@@ -15,6 +15,7 @@ import {
   useNavigate
 } from 'react-router-dom'
 import Blog from './components/Blog'
+import ErrorBoundary from './components/ErrorBoundary'
 import BlogForm from './components/BlogForm'
 import BlogList from './components/BlogList'
 import LoginForm from './components/LoginForm'
@@ -261,47 +262,49 @@ const App = () => {
         maxWidth="lg"
         sx={{ py: { xs: 3, sm: 5 } }}
       >
-        <Notification
-          message={notificationMessage}
-          type={notificationType}
-        />
-
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <BlogList blogs={blogs} />
-            }
+        <ErrorBoundary>
+          <Notification
+            message={notificationMessage}
+            type={notificationType}
           />
 
-          <Route
-            path="/blogs/:id"
-            element={
-              <Blog
-                blog={blog}
-                user={user}
-                handleLike={handleLike}
-                handleRemove={handleRemove}
-              />
-            }
-          />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <BlogList blogs={blogs} />
+              }
+            />
 
-          <Route
-            path="/login"
-            element={
-              <LoginForm handleLogin={handleLogin} />
-            }
-          />
+            <Route
+              path="/blogs/:id"
+              element={
+                <Blog
+                  blog={blog}
+                  user={user}
+                  handleLike={handleLike}
+                  handleRemove={handleRemove}
+                />
+              }
+            />
 
-          <Route
-            path="/create"
-            element={
-              user
-                ? <BlogForm createBlog={handleCreation} />
-                : <LoginForm handleLogin={handleLogin} />
-            }
-          />
-        </Routes>
+            <Route
+              path="/login"
+              element={
+                <LoginForm handleLogin={handleLogin} />
+              }
+            />
+
+            <Route
+              path="/create"
+              element={
+                user
+                  ? <BlogForm createBlog={handleCreation} />
+                  : <LoginForm handleLogin={handleLogin} />
+              }
+            />
+          </Routes>
+        </ErrorBoundary>
       </Container>
     </>
   )
